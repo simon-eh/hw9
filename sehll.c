@@ -25,16 +25,28 @@ int main() {
 	}
 }
 
+void s_handler(int s_no) {
+    if(s_no == SIGINT) {
+	//kill((pid_t)(-1), s_no);
+	printf("Got kill sig.\n");
+    }
+}
+
 int execute(const char *file, const char **args) {
 	pid_t childProc = fork();
 	if(childProc >= 0) {
 		if(childProc == 0) {
+			if(signal(SIGINT, s_handler) == SIG_ERR) {
+				printf("Error catching interrupt signal.\n");
+			}
+			int i=0;
+			while(i++ < 1000000=00){}
 			execvp(file, args);
 			printf("Error: %s\n", strerror(errno));
 		}
 		else {
 			int status;
-			wait(&status);
+			waitpid(childProc, &status, 0);
 			return status;
 		}
 	}
