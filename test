@@ -1,0 +1,3 @@
+echo "hi" |     wc > output.txt
+echo "hi"|wc>output.txt
+ls -l
