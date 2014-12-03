@@ -2,31 +2,35 @@
 
 #define MAX_LINE_SIZE 1024
 #define MAX_ARGS 100
+#define PROMPT ">$"
 
 int main() {
 	char *line = malloc(2*MAX_LINE_SIZE * sizeof(char) + 1);
 	const char **args = malloc(MAX_ARGS * sizeof(char*));
 	int reached_eof   = 0;
 	while(!reached_eof) {
+		printf("%s", PROMPT);
 		reached_eof = read_line(line, MAX_LINE_SIZE + 1);
 		int num_args = parse(line, args);
-		printf("%d args\n", num_args);
-		if(num_args == 3) {
-			printf("Executing cmd %s\n", *args);
-			printf("Args: %s\n", *(args + 1));
-			execute(*args, args+1);
+		execute(*args,args);
+		//printf("%d args\n", num_args);
+		//if(num_args == 3) {
+			//printf("Executing cmd %s\n", *args);
+			//printf("Args: %s\n", *(args + 1));
+			//execute(*args, args);
 			// execvp(*args, args+1);
 			// printf("Error: %s\n", strerror(errno));
 			// execute single cmd
-		}
+		//}
 	}
 }
 
-int execute(const char *file, const char *args[]) {
+int execute(const char *file, const char **args) {
 	pid_t childProc = fork();
 	if(childProc >= 0) {
 		if(childProc == 0) {
 			execvp(file, args);
+			printf("Error: %s\n", strerror(errno));
 		}
 		else {
 			int status;
@@ -35,7 +39,7 @@ int execute(const char *file, const char *args[]) {
 		}
 	}
 	else {
-
+		printf("Error: %s\n", strerror(errno));
 	}
 }
 

@@ -11,6 +11,6 @@
 
 int read_line(char*,int);
 int parse(char*,const char**);
-int execute(char*, const char**);
+int execute(const char*, const char**);
 
 #endif
