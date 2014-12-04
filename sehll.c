@@ -15,6 +15,12 @@ int main() {
 	const char **args = malloc(MAX_ARGS*2 * sizeof(char*));
 	const char **files = malloc(21 * sizeof(char*));
 	int reached_eof   = 0;
+	if(signal(SIGINT, s_handler) == SIG_ERR) {
+	    printf("Error catching interrupt signal.\n");
+	}
+	if(signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
+	    printf("Error catching child signal.\n");
+	}
 	while(!reached_eof) {
 		printf("%s", PROMPT);
 		reached_eof = read_line(line, MAX_LINE_SIZE + 1);
@@ -23,7 +29,6 @@ int main() {
 		}
 		int num_args = parse(line, args);
 		build_file_array(args, files, num_args);
-		int index = 0;
 		// while(*(files + index) != NULL) {
 		//     printf("%s", *(files + index++));
 		// }
@@ -68,8 +73,10 @@ void build_file_array(const char **args, const char **output, int num_args) {
 void s_handler(int s_no) {
     if(s_no == SIGINT) {
 	printf("Got kill sig.\n");
+	printf("Parent process id: %d\n", getppid());
+	printf("Children %d\n", nchildren);
 	if(nchildren == 0) {
-	    kill(getppid(), s_no);
+	    
 	}
 	else {
 	    for(int i=0; i<nchildren; i++) {
@@ -85,20 +92,15 @@ int execute(const char *file, const char **args, const char **files) {
 	int saved_stdout = dup(STDOUT_FILENO);
 	int saved_stdin = dup(STDIN_FILENO);
 
-	printf("Copied riginal stdin,stdout to: %d,%d\n", saved_stdin, saved_stdout);
 
 	if(childProc >= 0) {
 		if(childProc == 0) {
 			children[nchildren++] = childProc;
-			int i=0;
 			fix_fds(files);
 			execvp(file, args);
 			printf("Error: %s\n", strerror(errno));
 		}
 		else {	
-			if(signal(SIGINT, s_handler) == SIG_ERR) {
-				printf("Error catching interrupt signal.\n");
-			}
 			int status;
 
 			waitpid(childProc, &status, 0);
@@ -108,9 +110,6 @@ int execute(const char *file, const char **args, const char **files) {
 
 			OUTPUT_FD = 1;
 			INPUT_FD = 0;
-
-			close(saved_stdout);
-			close(saved_stdin);
 
 			return status;
 		}

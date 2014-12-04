@@ -1,2 +1,4 @@
 For signal handling, used an article at:  
 http://www.thegeekstuff.com/2012/03/catch-signals-sample-c-code/
+Trick for ignoring SIGCHLD to avoid zombie processes:
+http://stackoverflow.com/questions/7171722/how-can-i-handle-sigchld-in-c/7171836#7171836
