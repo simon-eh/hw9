@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -pedantic
+CFLAGS=-std=c99 -g -Wall -Wextra -pedantic -D_POSIX_SOURCE
 
 all: sehll
 sehll: sehll.c
