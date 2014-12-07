@@ -15,11 +15,13 @@
 
 void s_handler(int);
 int read_line(char*,int);
-int parse(char*,const char**);
-int execute(const char*, const char**, const char**);
+int parse(char*,const char**,int*);
+int execute(const char*, const char**);
 void build_file_array(const char**,const char**,int);
 void fix_fds();
 int is_redir_char(int);
+void run_cmd(const char**,int*,int);
+void restore_fds(int,int);
 
 
 #endif
